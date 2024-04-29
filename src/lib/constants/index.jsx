@@ -36,12 +36,12 @@ export const DASHBOARD_SIDEBAR_LINKS = [
 		path: '/customers',
 		icon: <HiOutlineUsers />
 	},
-	{
-		key: 'warehouse',
-		label: 'Quản lý kho',
-		path: '/warehouse',
-		icon: <HiOutlineLibrary />
-	},
+	// {
+	// 	key: 'warehouse',
+	// 	label: 'Quản lý kho',
+	// 	path: '/warehouse',
+	// 	icon: <HiOutlineLibrary />
+	// },
 	{
 		key: 'productCategories',
 		label: 'Quản lý danh mục sản phẩm',

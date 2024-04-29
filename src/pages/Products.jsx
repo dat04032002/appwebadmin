@@ -15,7 +15,7 @@ export default function Products() {
 
   const callApi = async () => {
     try {
-      const response = await axios.get(`https://localhost:7084/api/Products?pageNumber=${pageNumber}&pageSize=${pageSize}`);
+      const response = await axios.get(`https://localhost:7084/api/Products/GETALL`);
       setRecords(response.data);
     } catch (error) {
       console.error('Error fetching data:', error);
@@ -83,8 +83,7 @@ export default function Products() {
                     id="search"
                     placeholder="Search by name" 
                     value={searchTerm} 
-                    onChange={(e) => setSearchTerm(e.target.value)} 
-                  
+                    onChange={(e) => setSearchTerm(e.target.value)}                  
                   /> 
                 </div>
             </div>

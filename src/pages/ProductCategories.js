@@ -1,52 +1,69 @@
 import React from 'react'
 import { useEffect,useState } from 'react'
 import axios from 'axios'
-import FromAdd from './FromAdd.jsx'
+import FromAddPC from './AddProductCatagories.jsx'
+import { id } from 'date-fns/locale'
 
 export default function ProductCategories() {
     const [records, setRecords]= useState([])
     const [pageNumber, setPageNumber] = useState(1);
     const [pageSize] = useState(12);
+    const [isAdding, setIsAdding] = useState(true);
+    const [selectedProduct, setSelectedProduct] = useState(null);
+    const [showModal, setShowModal] = useState(false);
     var nf = new Intl.NumberFormat()
-  
+    const callApi = async () => {
+      try {
+          const response = await axios.get(`https://localhost:7084/api/ProductCategories?pageNumber=${pageNumber}&pageSize=${pageSize}`);
+          setRecords(response.data);
+          console.log(response)
+      } catch (error) {
+          console.error('Error fetching data:', error);
+      }
+  };
+
     useEffect(() => {
-      const callApi = async () => {
-          try {
-              const response = await axios.get(`https://localhost:7084/api/ProductCategories?pageNumber=${pageNumber}&pageSize=${pageSize}`);
-              setRecords(response.data);
-              console.log(response)
-          } catch (error) {
-              console.error('Error fetching data:', error);
-          }
-      };
-  
+    
       callApi();
   }, [pageNumber, pageSize]);
-  
+  useEffect(() => {
+    callApi();
+  }, [showModal]);
   const xoa= async(id)=>{
     var res= await axios.delete(`https://localhost:7084/api/ProductCategories/${id}`)
     console.log(res)
   
-    if(res.data.status===204){
+    if(res.status===204){
       alert("Bạn đã xóa sản phẩm thành công")
+      callApi();
+     
     }else{
       alert(res.data.error)
     } 
   }
-  
-  
-    const [ShowModal,setShowModal]= useState(false)
+  const openAddModal = () => {
+    setShowModal(true);
+    setIsAdding(true);
+    setSelectedProduct(null);
+  };
+
+  const openEditModal = (product) => {
+    setShowModal(true);
+    setIsAdding(false);
+    setSelectedProduct(product);
+  };
+
   return (
     <div>
     	<div className="container flex justify-center mx-auto">
   <div className="flex flex-col">
     <div className="w-full">
-      <div>
-      <button onClick={()=>setShowModal(true)} class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-      Thêm mới
-      </button>
-        { ShowModal &&<FromAdd onClose={()=>setShowModal(false)}/>}
-      </div>
+    <div>
+        <button onClick={openAddModal} className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+        Thêm mới
+          </button>
+          {showModal && <FromAddPC onClose={() => setShowModal(false)} isAdding={isAdding} setIsAdding={setIsAdding} selectedProduct={selectedProduct} />}
+        </div> 
      
       <div className="border-b border-gray-200 shadow mt-5">
      
@@ -89,7 +106,7 @@ export default function ProductCategories() {
                     <div className="text-sm text-gray-900">{e.description}</div>
                   </td> 
                   <td className="px-6 py-4">
-                    <button onClick={()=>setShowModal(true)}>
+                    <button onClick={() => openEditModal(e,id)}>
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
                         className="w-6 h-6 text-blue-400"
@@ -107,7 +124,6 @@ export default function ProductCategories() {
                         />
                       </svg>
                     </button>
-                    { ShowModal &&<FromAdd onClose={()=>setShowModal(false)}/>}
                   </td>
                   <td className="px-6 py-4">
                     <button onClick={()=>xoa(e.id)}>
